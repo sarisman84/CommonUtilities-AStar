@@ -31,6 +31,8 @@ LRESULT Game::WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	lParam;
 	wParam;
 	hWnd;
+
+	//myMouseHandler.UpdateEvents(hWnd, message, wParam, lParam);
 	switch (message)
 	{
 		// this message is read when the window is closed
@@ -75,11 +77,12 @@ bool Game::Init(const std::wstring& aVersion, HWND /*aHWND*/)
 
 void Game::InitCallBack()
 {
-	myGameWorld.Init();
+	myTest.Awake();
 }
 
 void Game::UpdateCallBack()
 {
-	myGameWorld.Update(Tga2D::Engine::GetInstance()->GetDeltaTime());
-	myGameWorld.Render();
+	myTest.Update(Tga2D::Engine::GetInstance()->GetDeltaTime());
+	myTest.Render();
+	//myMouseHandler.EndFrame();
 }

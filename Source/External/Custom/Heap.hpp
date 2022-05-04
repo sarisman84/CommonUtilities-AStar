@@ -11,7 +11,7 @@ namespace CommonUtilities
 	{
 		Max, Min
 	};
-	template <class T, HeapType aHeapType = HeapType::Max, bool useStdInstead = false>
+	template <class T, HeapType aHeapType = HeapType::Max>
 	class Heap
 	{
 	public:
@@ -59,39 +59,21 @@ namespace CommonUtilities
 			switch (aHeapType)
 			{
 			case CommonUtilities::HeapType::Max:
-				if (!useStdInstead)
-				{
-					if (lhs < myBuffer.size() && myBuffer[lhs] > myBuffer[currentElement])
-						currentElement = lhs;
-					if (rhs < myBuffer.size() && myBuffer[rhs] > myBuffer[currentElement])
-						currentElement = rhs;
-				}
 
-				else
-				{
-					if (lhs < myBuffer.size() /*&& std::greater<T>(myBuffer[lhs], myBuffer[currentElement])*/)
-						currentElement = lhs;
+				if (lhs < myBuffer.size() && myBuffer[currentElement] < myBuffer[lhs])
+					currentElement = lhs;
+				if (rhs < myBuffer.size() && myBuffer[currentElement] < myBuffer[rhs])
+					currentElement = rhs;
 
-					if (rhs < myBuffer.size() /*&& std::greater<T>(myBuffer[rhs], myBuffer[currentElement])*/)
-						currentElement = rhs;
-				}
 
 				break;
 			case CommonUtilities::HeapType::Min:
-				if (!useStdInstead)
-				{
-					if (lhs < myBuffer.size() && myBuffer[lhs] < myBuffer[currentElement])
-						currentElement = lhs;
-					if (rhs < myBuffer.size() && myBuffer[rhs] < myBuffer[currentElement])
-						currentElement = rhs;
-				}
-				else
-				{
-					if (lhs < myBuffer.size() /*&& std::less<T>(myBuffer[lhs], myBuffer[currentElement])*/)
-						currentElement = lhs;
-					if (rhs < myBuffer.size() /*&& std::less<T>(myBuffer[rhs], myBuffer[currentElement])*/)
-						currentElement = rhs;
-				}
+
+				if (lhs < myBuffer.size() && myBuffer[lhs] < myBuffer[currentElement])
+					currentElement = lhs;
+				if (rhs < myBuffer.size() && myBuffer[rhs] < myBuffer[currentElement])
+					currentElement = rhs;
+
 
 				break;
 			}
@@ -110,16 +92,13 @@ namespace CommonUtilities
 			switch (aHeapType)
 			{
 			case CommonUtilities::HeapType::Max:
-				if (!useStdInstead)
-					currentElement = parentIndex >= 0 && myBuffer[aIndex] > myBuffer[parentIndex] ? parentIndex : currentElement;
-				else
-					currentElement /*= parentIndex >= 0 && std::greater<T>(myBuffer[aIndex], myBuffer[parentIndex]) ? parentIndex : currentElement*/;
+
+				currentElement = parentIndex >= 0 && myBuffer[parentIndex] < myBuffer[aIndex] ? parentIndex : currentElement;
+
 				break;
 			case CommonUtilities::HeapType::Min:
-				if (!useStdInstead)
-					currentElement = parentIndex >= 0 && myBuffer[aIndex] < myBuffer[parentIndex] ? parentIndex : currentElement;
-				else
-					currentElement /*= parentIndex >= 0 && std::less<T>(myBuffer[aIndex], myBuffer[parentIndex]) ? parentIndex : currentElement*/;
+				currentElement = parentIndex >= 0 && myBuffer[aIndex] < myBuffer[parentIndex] ? parentIndex : currentElement;
+
 				break;
 			}
 

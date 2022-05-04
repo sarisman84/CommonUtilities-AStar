@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\Source\Game\Game.cpp">
+      <Filter>TGE</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Game\GameWorld.cpp">
+      <Filter>TGE</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Game\stdafx.cpp">
+      <Filter>TGE</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Game\Test\AStarTest.cpp">
+      <Filter>Assignment</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Source\Game\stdafx.h">
+      <Filter>TGE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Game\Game.h">
+      <Filter>TGE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Game\GameWorld.h">
+      <Filter>TGE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Game\resource.h">
+      <Filter>TGE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Game\targetver.h">
+      <Filter>TGE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Game\AStar\AStar.h">
+      <Filter>AStar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Game\Test\AStarTest.h">
+      <Filter>Assignment</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="TGE">
+      <UniqueIdentifier>{b4f4bda7-2f62-45a8-9c50-3faa89a378d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AStar">
+      <UniqueIdentifier>{d6edbb30-444a-4fec-9735-079157706847}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assignment">
+      <UniqueIdentifier>{966bfb8c-7bc0-4a8b-98b5-a95c367a77ac}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
