@@ -36,7 +36,8 @@ using namespace Tga2D;
 
 GraphicsEngine::GraphicsEngine()
 	: myIsInitiated(false)
-{}
+{
+}
 
 GraphicsEngine::~GraphicsEngine(void)
 {
@@ -53,14 +54,18 @@ bool GraphicsEngine::Init()
 	mySpriteDrawer = std::make_unique<SpriteDrawer>();
 	mySpriteDrawer->Init();
 
+
 	myModelDrawer = std::make_unique<ModelDrawer>();
-	myModelDrawer->Init();
+	if (!myModelDrawer->Init())
+		return false;
 
 	myCustomShapeDrawer = std::make_unique<CustomShapeDrawer>(Engine::GetInstance());
-	myCustomShapeDrawer->Init();
+	if (!myCustomShapeDrawer->Init())
+		return false;
 
 	myLineDrawer = std::make_unique<LineDrawer>(Engine::GetInstance());
-	myLineDrawer->Init();
+	if (!myLineDrawer->Init())
+		return false;
 
 	myForwardRenderer = std::make_unique<ForwardRenderer>();
 	if (!myForwardRenderer->Init())
@@ -79,8 +84,8 @@ bool GraphicsEngine::Init()
 	if (!myFullscreenHorizontalGaussianBlur->Init("Shaders/PostprocessGaussianH_PS.cso"))
 		return false;
 	myFullscreenPixelateEffect = std::make_unique<FullscreenPixelateEffect>();
-	if(!myFullscreenPixelateEffect->Init("Shaders/PostprocessPixelate.cso"))
-		return false;
+	//if (!myFullscreenPixelateEffect->Init("Shaders/PostprocessPixelate.cso"))
+	//	return false;
 
 	HRESULT result = S_OK;
 

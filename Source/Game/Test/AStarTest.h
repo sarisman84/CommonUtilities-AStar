@@ -1,13 +1,9 @@
 #pragma once
 #include "../AStar/AStar.h"
 #include <tga2d/texture/texture.h>
-
-struct Transform2D
-{
-	CommonUtilities::Vector2<float> myPosition;
-	CommonUtilities::Vector2<float> mySize;
-};
-
+#include "Transform2D.h"
+#include "BoxCollider.h"
+#include "../AStar/AStar.h"
 class AStarTest
 {
 public:
@@ -16,8 +12,20 @@ public:
 	void Update(const float& aTimeDelta);
 	void Render();
 private:
+	void OnClick();
+
 	Transform2D mySpriteMap[MapWidth][MapHeight];
+	BoxCollider myColliderMap[MapWidth][MapHeight];
+	std::vector<Tile> myTileMap;
 	Tga2D::Texture* myTileTexture;
-	const CommonUtilities::Vector2<float> myTileSize;
+	const Tga2D::Vector2<float> myTileSize = { .05f, .05f };
+	Tga2D::Vector2<float> myMousePosition;
+	std::vector<int> myFoundPath;
+
+
+	int myStartPosition;
+	int myEndPosition;
+
+	
 };
 

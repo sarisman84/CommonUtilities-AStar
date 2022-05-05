@@ -13,6 +13,9 @@
     <ClCompile Include="..\Source\Game\Test\AStarTest.cpp">
       <Filter>Assignment</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\Game\Test\BoxCollider.cpp">
+      <Filter>Assignment</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Game\stdafx.h">
@@ -36,6 +39,12 @@
     <ClInclude Include="..\Source\Game\Test\AStarTest.h">
       <Filter>Assignment</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\Game\Test\BoxCollider.h">
+      <Filter>Assignment</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Game\Test\Transform2D.h">
+      <Filter>Assignment\Utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="TGE">
@@ -46,6 +55,9 @@
     </Filter>
     <Filter Include="Assignment">
       <UniqueIdentifier>{966bfb8c-7bc0-4a8b-98b5-a95c367a77ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assignment\Utilities">
+      <UniqueIdentifier>{76ccf13c-7fe3-4011-91c2-41afa1dbda13}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

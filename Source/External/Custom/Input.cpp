@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "stdafx.h"
 #include "Input.h"
 #include <optional>
 #include "windowsx.h"
@@ -27,7 +27,7 @@ CommonUtilities::GClient::GClient(const unsigned int anID, Vector2<float> aDeadz
 {
 	ZeroMemory(&myState, sizeof(XINPUT_STATE));
 	ZeroMemory(&myVibration, sizeof(XINPUT_VIBRATION));
-	ZeroMemory(&myBatteryInfo, sizeof(XINPUT_BATTERY_INFORMATION));
+	//ZeroMemory(&myBatteryInfo, sizeof(XINPUT_BATTERY_INFORMATION));
 	ZeroMemory(&myCapabilities, sizeof(XINPUT_CAPABILITIES));
 }
 
@@ -158,11 +158,11 @@ float CommonUtilities::GClient::RightTrigger() const noexcept
 bool CommonUtilities::GClient::GetAudioDeviceIDs(const std::wstring& aPRenderDeviceId, unsigned int* aPRenderCount, const std::wstring& aPCaptureDeviceId, unsigned int* aPCaptureCount) const
 {
 	// I'm not quite sure how to use this one but this should wrap it okay
-	const auto result = XInputGetAudioDeviceIds(GetControllerID(),
+	/*const auto result = XInputGetAudioDeviceIds(GetControllerID(),
 		const_cast<wchar_t*>(aPRenderDeviceId.c_str()), aPRenderCount,
 		const_cast<wchar_t*>(aPCaptureDeviceId.c_str()), aPCaptureCount);
 	if (result != ERROR_SUCCESS)
-		return false;
+		return false;*/
 	return true;
 }
 

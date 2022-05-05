@@ -4,6 +4,7 @@
 //#include "Custom/Input.h"
 #include "Test/AStarTest.h"
 
+
 class Game
 {
 public:
@@ -15,5 +16,4 @@ private:
 	void UpdateCallBack();
 	LRESULT WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	AStarTest myTest;
-	//CommonUtilities::Mouse myMouseHandler;
 };

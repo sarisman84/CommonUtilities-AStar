@@ -1,8 +1,8 @@
 #pragma once
 #include <vector>
-#include "Custom/Heap.hpp"
-#include "Custom/Vector2.h"
-
+#include <Custom/Heap.hpp>
+#include <Custom/Vector2.h>
+#include <functional>
 
 
 static const int MapWidth = 20;
@@ -19,79 +19,39 @@ enum class Access
 	Read, Write, Both
 };
 
-template<class T>
-struct Prop
-{
-	T myValue;
-	Prop(std::function<void(T& aValue)> aSet, std::function<T()> aGet)
-	{
-		mySet = aSet;
-		myGet = aGet;
-	}
-
-	void operator=(const T& someOtherValue)
-	{
-		if (mySet)
-			mySet(someOtherValue);
-	}
-
-	void operator=(const Prop<T>& someOtherProp)
-	{
-		mySet = someOtherProp.mySet;
-		myGet = someOtherProp.myGet;
-	}
-
-	bool operator<(const Prop<T>& someOther) const
-	{
-		if (myGet && someOther.myGet)
-			return myGet() < someOther.myGet();
-		return false;
-	}
-
-private:
-
-	std::function<void(T& aValue)> mySet;
-	std::function<T()> myGet;
-
-};
-
-template<class T>
-void operator<<(T& aValue, const Prop<T>& aProp)
-{
-	if (aProp.myGet)
-	{
-		aProp.myValue = aProp.myGet(aValue);
-		aValue = aProp.myValue;
-	}
 
 
-}
+
 
 struct Node
 {
+private:
+	int myFCost;
+public:
+
 	Node() = default;
 	Node(int anXCoord, int anYCoord)
 	{
 		myPos.x = anXCoord;
 		myPos.y = anYCoord;
+
+		myDadPos.x = -1;
+		myDadPos.y = -1;
 	}
 
 	CommonUtilities::Vector2<int> myPos;
-	CommonUtilities::Vector2<int> myPathPos;
+	CommonUtilities::Vector2<int> myDadPos;
 	int myHCost, myGCost;
 
-
-
-
-
-	const Prop<int> myFCost = { nullptr, [this]() -> int
+	int FCost()
 	{
-			return myGCost + myHCost;
-	} };
+		myFCost = myGCost + myHCost;
+		return myFCost;
+	}
 
-	bool operator<(const Node& someOther)
+	bool operator<(Node& someOther)
 	{
-		return myFCost < someOther.myFCost;
+		return FCost() < someOther.FCost();
 	}
 
 	bool operator==(const Node& someOther)
@@ -109,16 +69,17 @@ struct Node
 	{
 		myHCost = someOther.myHCost;
 		myGCost = someOther.myGCost;
-		//myFCost.myValue << someOther.myFCost;
 
 		myPos = someOther.myPos;
-		myPathPos = someOther.myPathPos;
+		myDadPos = someOther.myDadPos;
 	}
+
+
 
 };
 
 
-std::vector<int> AStar(const std::vector<Tile>& aMap, int aStartIndex, int anEndIndex, bool aUseEuclidianDistance = false)
+inline std::vector<int> AStar(const std::vector<Tile>& aMap, int aStartIndex, int anEndIndex, bool aUseEuclidianDistance = false)
 {
 	std::vector<int> path;
 	using namespace CommonUtilities;
@@ -137,55 +98,66 @@ std::vector<int> AStar(const std::vector<Tile>& aMap, int aStartIndex, int anEnd
 		int y = i / MapHeight;
 		myNodes.emplace_back(x, y);
 		myNodes[i].myGCost = INT_MAX;
-		myNodes[i].myHCost = aUseEuclidianDistance ? static_cast<int>(std::sqrt(std::pow((x - endPos.x), 2) + std::pow((y - endPos.y), 2))) : std::abs(x - endPos.x) + std::abs(y - endPos.y);
+		myNodes[i].myHCost = aUseEuclidianDistance ?
+			static_cast<int>(std::sqrt(std::pow((x - endPos.x), 2) + std::pow((y - endPos.y), 2))) :
+			std::abs(x - endPos.x) + std::abs(y - endPos.y);
 	}
 
-	Node startingNode = myNodes[aStartIndex];
+	Node& startingNode = myNodes[aStartIndex];
 	startingNode.myGCost = 0;
-	Node endNode = Node(-1, -1);
-	Heap<Node, HeapType::Min> myOpenNodes;
+	Heap<Node*, HeapType::Min> myOpenNodes;
 	std::vector<Node> myClosedNodes;
 
+	//std::vector<Node> myOpenNodes;
 
-	myOpenNodes.Enqueue(startingNode);
+	//std::make_heap(myOpenNodes.begin(), myOpenNodes.end());
+
+	myOpenNodes.Enqueue(&startingNode);
 
 	while (myOpenNodes.GetSize() > 0)
 	{
-		Node targetNode = myOpenNodes.Dequeue();
-		myClosedNodes.push_back(targetNode);
-		for (int xNeighbour = 0; xNeighbour < 3; xNeighbour++)
+
+		/*std::sort(myOpenNodes.begin(), myOpenNodes.end(), [](Node aLhs, Node aRhs)->bool { return aLhs.FCost() > aRhs.FCost(); });*/
+		Node* owner = myOpenNodes.Dequeue();
+
+
+
+		myClosedNodes.push_back(*owner);
+		for (int xNeighbour = -1; xNeighbour <= 1; xNeighbour++)
 		{
-			for (int yNeighbour = 0; yNeighbour < 3; yNeighbour++)
+			for (int yNeighbour = -1; yNeighbour <= 1; yNeighbour++)
 			{
-				int offsetX = targetNode.myPos.x + xNeighbour;
-				int offsetY = targetNode.myPos.y + yNeighbour;
+				int offsetX = owner->myPos.x + xNeighbour;
+				int offsetY = owner->myPos.y + yNeighbour;
 
 				if (offsetX < 0 || offsetX >= MapWidth) continue; //Skip incase of out of bounds
 				if (offsetY < 0 || offsetY >= MapHeight) continue; //Skip incase of out of bounds
 				if (xNeighbour != 0 && yNeighbour != 0) continue; //Skip diagonals
 				if (xNeighbour == 0 && yNeighbour == 0) continue; //Skip center
-				Node neighbour = myNodes[offsetX + MapWidth * offsetY];
+				Node& neighbour = myNodes[offsetX + MapWidth * offsetY];
 
 				if (std::find(myClosedNodes.begin(), myClosedNodes.end(), neighbour) != myClosedNodes.end()) continue; //Skip if node is closed
 				if (aMap[offsetX + MapWidth * offsetY] == Tile::Impassable) continue; //Skip if node is impassable
 
-				int gCost = targetNode.myGCost + static_cast<int>(Vector2<int>::Distance(neighbour.myPos, targetNode.myPos));
+				int gCost = owner->myGCost + static_cast<int>(Vector2<int>::Distance(neighbour.myPos, owner->myPos));
 
 				if (gCost < neighbour.myGCost)
 				{
 					neighbour.myGCost = gCost;
-					neighbour.myPathPos = targetNode.myPos;
+					neighbour.myDadPos = owner->myPos;
+					neighbour.FCost();
+					myOpenNodes.Enqueue(&neighbour);
 				}
 
-				myOpenNodes.Enqueue(neighbour);
+
 
 			}
 		}
 	}
-	Node currentNode = myNodes[endPos.x + MapWidth * endPos.y];
-	while (currentNode != startingNode)
+	Node currentNode = myNodes[anEndIndex];
+	while (currentNode != myNodes[aStartIndex])
 	{
-		int i = currentNode.myPathPos.x + MapWidth * currentNode.myPathPos.y;
+		int i = currentNode.myDadPos.x + MapWidth * currentNode.myDadPos.y;
 		currentNode = myNodes[i];
 		path.push_back(i);
 	}

@@ -161,6 +161,8 @@
     <ClInclude Include="..\Source\Game\stdafx.h" />
     <ClInclude Include="..\Source\Game\targetver.h" />
     <ClInclude Include="..\Source\Game\Test\AStarTest.h" />
+    <ClInclude Include="..\Source\Game\Test\BoxCollider.h" />
+    <ClInclude Include="..\Source\Game\Test\Transform2D.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\Game\Game.cpp" />
@@ -169,6 +171,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Source\Game\Test\AStarTest.cpp" />
+    <ClCompile Include="..\Source\Game\Test\BoxCollider.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -329,7 +329,7 @@ namespace CommonUtilities
 		XINPUT_GAMEPAD* myGamepad;
 		XINPUT_STATE myState;
 		XINPUT_VIBRATION myVibration;
-		XINPUT_BATTERY_INFORMATION myBatteryInfo;
+		//XINPUT_BATTERY_INFORMATION myBatteryInfo;
 		XINPUT_CAPABILITIES myCapabilities;
 
 		Vector2<float> myLeftStick;
