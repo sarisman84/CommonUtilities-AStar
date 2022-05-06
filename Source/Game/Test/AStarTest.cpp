@@ -19,9 +19,9 @@ void AStarTest::Awake()
 	auto targetRez = Tga2D::Engine::GetInstance()->GetWindowRatio();
 
 	myTileTexture = Tga2D::Engine::GetInstance()->GetTextureManager().GetTexture(L"Sprites/tile.png");
-	for (int x = 0; x < MapWidth; x++)
+	for (int y = 0; y < MapHeight; y++)
 	{
-		for (int y = 0; y < MapHeight; y++)
+		for (int x = 0; x < MapWidth; x++)
 		{
 			float xSize = myTileSize.x / targetRez;
 			float ySize = myTileSize.y;
@@ -30,15 +30,15 @@ void AStarTest::Awake()
 			float xPos = ((x * xSize) + (myTileSize.x / 2.f) / targetRez);
 			float yPos = ((y * ySize) + (myTileSize.y / 2.f));
 
-			mySpriteMap[x][y] = Transform2D
+			mySpriteMap[y][x] = Transform2D
 			{
 				Tga2D::Vector2<float>(xPos, yPos),
 				myTileSize
 			};
 
 
-			myTileMap[x * MapWidth + y] = Tile::Passable;
-			myColliderMap[x][y] = BoxCollider(mySpriteMap[x][y]);
+			myTileMap[x + MapWidth * y] = Tile::Passable;
+			myColliderMap[y][x] = BoxCollider(mySpriteMap[y][x]);
 
 			/*myColliderMap[x][y].OnCollisionEnter() += [this, x, y]()
 			{
@@ -56,7 +56,7 @@ void AStarTest::Awake()
 			};*/
 
 
-			myColliderMap[x][y].OnCollisionClick() += [this, x, y]()
+			myColliderMap[y][x].OnCollisionClick() += [this, x, y]()
 			{
 				using namespace CommonUtilities;
 				using MKey = Mouse::Key;
@@ -70,31 +70,32 @@ void AStarTest::Awake()
 				{
 					if (Keyboard::GetButton(CKey::Q))
 					{
-						myTileMap[x * MapWidth + y] = Tile::Impassable;
+						myTileMap[x + MapWidth * y] = Tile::Impassable;
 					}
 					else if (Keyboard::GetButton(CKey::E))
 					{
-						myTileMap[x * MapWidth + y] = Tile::Passable;
+						myTileMap[x + MapWidth * y] = Tile::Passable;
 					}
 
 				}
 
 				if (Mouse::GetButtonDown(MKey::LeftMouseButton) && !Keyboard::GetButton(CKey::Q) && !Keyboard::GetButton(CKey::E))
 				{
-					if (myFoundPath.size() != 0)
+					if (myStartPosition != -1 && myEndPosition != -1)
 					{
+						mySearchArea.clear();
 						myFoundPath.clear();
 						myStartPosition = -1;
 						myEndPosition = -1;
 					}
 					else if (myStartPosition == -1)
 					{
-						myStartPosition = x * MapWidth + y;
+						myStartPosition = x + MapWidth * y;
 					}
-					else if (myEndPosition == -1)
+					else if (myEndPosition == -1 && myStartPosition != myEndPosition)
 					{
-						myEndPosition = x * MapWidth + y;
-						myFoundPath = AStar(myTileMap, myStartPosition, myEndPosition);
+						myEndPosition = x + MapWidth * y;
+						myFoundPath = AStar(myTileMap, myStartPosition, myEndPosition, &mySearchArea);
 					}
 				}
 
@@ -114,36 +115,36 @@ void AStarTest::Update(const float& /*aTimeDelta*/)
 
 	std::cout << '\r' << myMousePosition << std::flush;
 
-	for (int x = 0; x < MapWidth; x++)
+	for (int y = 0; y < MapHeight; y++)
 	{
-		for (int y = 0; y < MapHeight; y++)
+		for (int x = 0; x < MapWidth; x++)
 		{
 			/*float dist = (myMousePosition - myColliderMap[x][y].Transform().myPosition).Length();
 
 			if (dist >= 0.015f) continue;*/
 
-			bool result = myColliderMap[x][y].CheckCollision(Transform2D{ myMousePosition,  Tga2D::Vector2f(1.f, 1.f) });
+			bool result = myColliderMap[y][x].CheckCollision(Transform2D{ myMousePosition,  Tga2D::Vector2f(1.f, 1.f) });
 
-			bool hasCollidedBefore = myColliderMap[x][y].HasCollidedAlready();
+			bool hasCollidedBefore = myColliderMap[y][x].HasCollidedAlready();
 			if (result)
 			{
 				if (!hasCollidedBefore)
 				{
-					myColliderMap[x][y].OnCollisionEnter().Invoke();
-					myColliderMap[x][y].HasCollidedAlready() = true;
+					myColliderMap[y][x].OnCollisionEnter().Invoke();
+					myColliderMap[y][x].HasCollidedAlready() = true;
 				}
 
 
 
 
-				myColliderMap[x][y].OnCollisionClick().Invoke();
+				myColliderMap[y][x].OnCollisionClick().Invoke();
 
 
 			}
 			else if (hasCollidedBefore)
 			{
-				myColliderMap[x][y].OnCollisionExit().Invoke();
-				myColliderMap[x][y].HasCollidedAlready() = false;
+				myColliderMap[y][x].OnCollisionExit().Invoke();
+				myColliderMap[y][x].HasCollidedAlready() = false;
 			}
 
 
@@ -169,23 +170,29 @@ void AStarTest::Render()
 	auto batch = drawer.BeginBatch(data);
 
 
-	for (size_t x = 0; x < MapWidth; x++)
+	for (size_t y = 0; y < MapHeight; y++)
 	{
-		for (size_t y = 0; y < MapHeight; y++)
+		for (size_t x = 0; x < MapWidth; x++)
 		{
 			Tga2D::Sprite2DInstanceData ins;
-			auto transform = mySpriteMap[x][y];
+			auto transform = mySpriteMap[y][x];
 			ins.myPosition = transform.myPosition;
 			ins.mySize = transform.mySize;
 			ins.myPivot = { 0.5f, 0.5f };
 
-			ins.myColor = myTileMap[x * MapWidth + y] == Tile::Passable ? Tga2D::Color(0.f, 1.f, 0.f, 1.f) : Tga2D::Color(1.f, 0.f, 0.f, 1.f);
+			ins.myColor = myTileMap[x + MapWidth * y] == Tile::Passable ? Tga2D::Color(0.f, 1.f, 0.f, 1.f) : Tga2D::Color(1.f, 0.f, 0.f, 1.f);
 
-			if (std::find(myFoundPath.begin(), myFoundPath.end(), x * MapWidth + y) != myFoundPath.end())
+
+			if (std::find(mySearchArea.begin(), mySearchArea.end(), x + MapWidth * y) != mySearchArea.end())
+				ins.myColor = Tga2D::Color(1.f, 1.f, 0.f, 1.f);
+			if (std::find(myFoundPath.begin(), myFoundPath.end(), x + MapWidth * y) != myFoundPath.end())
 				ins.myColor = Tga2D::Color(0.f, 0.f, 1.f, 1.f);
 
-			if (x * MapWidth + y == myStartPosition || x * MapWidth + y == myEndPosition)
+			if (x + MapWidth * y == myStartPosition || x + MapWidth * y == myEndPosition)
 				ins.myColor = Tga2D::Color(0.f, 1.f, 1.f, 1.f);
+
+
+
 			batch.Draw(ins);
 		}
 	}

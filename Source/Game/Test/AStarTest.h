@@ -21,7 +21,7 @@ private:
 	const Tga2D::Vector2<float> myTileSize = { .05f, .05f };
 	Tga2D::Vector2<float> myMousePosition;
 	std::vector<int> myFoundPath;
-
+	std::vector<int> mySearchArea;
 
 	int myStartPosition;
 	int myEndPosition;
